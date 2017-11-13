@@ -1,26 +1,28 @@
-# Slim Framework 3 Skeleton Application
+# SMSUniSalvador
 
-Use this skeleton application to quickly setup and start working on a new Slim Framework 3 application. This application uses the latest Slim 3 with the PHP-View template renderer. It also uses the Monolog logger.
+Sistema responsável por carregar todas as mensagens enviadas para um AmazonSQS específico, em seguida, descarrega todas estas mensagens em um banco de dados MySQL que posteriormente será lido por um sistema de envios de SMS.
 
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
+## Principais configurações
 
-## Install the Application
+Para apontar ao seu banco de dados MySQL:
 
-Run this command from the directory in which you want to install your new Slim Framework application.
+    $mysqli = new mysqli("host", "usuario", "senha", "bancodedados");
 
-    php composer.phar create-project slim/slim-skeleton [my-app-name]
+Substitua as variáveis com os dados do seu servidor MySQL.
 
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
+Configurações do AmazonSQS:
 
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writeable.
+    $queueUrl= 'url'; //A url do seu queue (local onde fica as mensagens)
+    $client = SqsClient::factory(array(
+    	'profile' => 'default', //O seu perfil. Dê uma olhada na pasta .aws, no arquivo credentials.
+    	'region'  => 'us-west-2' //Região do seu AmazonSQS
+	));
 
-To run the application in development, you can also run this command. 
+Substitua as variáveis com os dados do seu SQS.
 
-	php composer.phar start
+* Quando você acessar a url /SQStoMySQL todas as mensagens no seu SQS serão transferidas para o banco de dados e excluídas em seguida do Amazon SQS.
 
-Run this command to run the test suite
+Para rodar a aplicação localmente utilize o comando: 
 
-	php composer.phar test
+	php -S localhost:8080 -t public public/index.php
 
-That's it! Now go build something cool.
